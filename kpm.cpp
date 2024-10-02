@@ -8,26 +8,28 @@
 #include <fstream>
 #include <chrono>
 #include <ctime>
+#include "console_color.h"
 
-namespace fs = std::filesystem;
-using json = nlohmann::json;
+#include "prj.h"
 
-bool init(std::string name);
-bool out();
-bool integrate_files();
-bool compile();
-bool assemble();
-bool link();
+// namespace fs = std::filesystem;
+// using json = nlohmann::json;
+
+// bool out();
+// bool integrate_files();
+// bool compile();
+// bool assemble();
+// bool link();
 fs::path get_kpm_path();
-bool copy_directory(const fs::path &source, const fs::path &destination);
-bool flatten_project(const fs::path &source);
-bool has_changed(fs::path path);
-bool load_configs();
-void update_configs();
+// bool copy_directory(const fs::path &source, const fs::path &destination);
+// bool flatten_project(const fs::path &source);
+// bool has_changed(fs::path path);
+// bool load_configs();
+// void update_configs();
 
 fs::path PWD, KPM;
 
-json configs;
+// json configs;
 
 int main(int argc, char *argv[])
 {
@@ -41,16 +43,24 @@ int main(int argc, char *argv[])
     std::string command = argv[1];
     if (command == "init")
     {
-        if (init((argc >= 3 ? argv[2] : ".")))
-            std::cout << "---- Project started! \n";
-    }
-    else if (command == "out")
-    {
-        if (load_configs())
+        if (prj::init(KPM, PWD / (argc >= 3 ? argv[2] : "")))
         {
-            out();
+            std::cout << color::green << "-- Project started! --\n"
+                      << color::white;
+        }
+        else
+        {
+            std::cout << color::red << "-- Failed --\n"
+                      << color::white;
         }
     }
+    // else if (command == "out")
+    // {
+    //     if (load_configs())
+    //     {
+    //         out();
+    //     }
+    // }
     return 0;
 }
 
@@ -62,39 +72,12 @@ fs::path get_kpm_path()
     std::wstring ws(path);
     std::string kpm_path(ws.begin(), ws.end());
 
-    std::string redundant = "\\kpm.exe";
-
+    std::string redundant = "\\outDebug.exe";
     kpm_path = kpm_path.substr(0, kpm_path.length() - redundant.length());
 
     return kpm_path;
 }
-
-bool init(std::string name)
-{
-    try
-    {
-        PWD = (name == "." ? PWD : PWD / name);
-        if (!copy_directory(KPM / "init", PWD))
-            return false;
-        if (!fs::exists(PWD / "configs.js"))
-        {
-            json configs = {
-                {"name", PWD.filename()},
-                {"lastOut", time(NULL) - 1}};
-
-            std::ofstream configs_file(PWD / "configs.json");
-            configs_file << configs;
-            configs_file.close();
-        }
-        return true;
-    }
-    catch (const std::exception &e)
-    {
-        std::cerr << e.what() << '\n';
-        return false;
-    }
-}
-
+/*
 bool out()
 {
     if (!integrate_files())
@@ -323,3 +306,4 @@ void update_configs()
     configs_file << configs;
     configs_file.close();
 }
+*/
