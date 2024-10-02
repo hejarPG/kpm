@@ -23,7 +23,7 @@ bool copy_directory(const fs::path &source, const fs::path &destination);
 bool flatten_project(const fs::path &source);
 bool has_changed(fs::path path);
 bool load_configs();
-void update_configs(std::string name, time_t t);
+void update_configs();
 
 fs::path PWD, KPM;
 
@@ -125,7 +125,9 @@ bool integrate_files()
         std::cout << "Changes:\n";
         if (!flatten_project(PWD))
             return false;
-        update_configs("", time(NULL));
+
+        configs["lastOut"] = time(NULL);
+        update_configs();
         return true;
     }
     catch (const std::exception &e)
@@ -315,11 +317,8 @@ bool load_configs()
     }
 }
 
-void update_configs(std::string new_name, time_t new_last_out)
+void update_configs()
 {
-    configs["name"] = ((new_name != "") ? new_name : (std::string)configs["name"]);
-    configs["lastOut"] = ((new_last_out == 0) ? (time_t)configs["lasOut"] : new_last_out);
-
     std::ofstream configs_file(PWD / "configs.json");
     configs_file << configs;
     configs_file.close();
