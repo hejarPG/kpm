@@ -1,6 +1,11 @@
 #pragma once
 
 #include "includes.h"
+#include "file_helper.h"
+#include "console_color.h"
+#include "compiler.h"
+#include "assembler.h"
+#include "linker.h"
 
 using json = nlohmann::json;
 namespace fs = std::filesystem;

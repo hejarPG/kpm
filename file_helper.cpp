@@ -1,8 +1,4 @@
 #include "file_helper.h"
-#include "console_color.h"
-
-#include "includes.h"
-#include "prj.h"
 
 void fh::copy_directory(fs::path source, fs::path dest)
 {

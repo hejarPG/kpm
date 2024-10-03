@@ -1,9 +1,5 @@
 #include "assembler.h"
 
-#include "console_color.h"
-#include "includes.h"
-#include "file_helper.h"
-
 bool assembler::assemble(fs::path dir)
 {
     try

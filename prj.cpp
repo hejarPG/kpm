@@ -1,10 +1,4 @@
-#include "includes.h"
 #include "prj.h"
-#include "file_helper.h"
-#include "console_color.h"
-#include "compiler.h"
-#include "assembler.h"
-#include "linker.h"
 
 json configs = {};
 

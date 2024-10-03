@@ -1,9 +1,5 @@
 #include "compiler.h"
 
-#include "console_color.h"
-#include "includes.h"
-#include "file_helper.h"
-
 bool compiler::compile(fs::path dir)
 {
     try
