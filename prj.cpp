@@ -7,6 +7,7 @@
 #include <fstream>
 
 using json = nlohmann::json;
+namespace fs = std::filesystem;
 
 json configs = {};
 
@@ -30,7 +31,7 @@ bool prj::init(fs::path KPM, fs::path PWD)
             return false;
         }
 
-        fs::copy_directory(KPM / "init", PWD);
+        fh::copy_directory(KPM / "init", PWD);
 
         configs = {
             {"name", PWD.filename()},
@@ -62,4 +63,38 @@ void prj::update_configs(fs::path PWD)
     std::ofstream configs_file(PWD / "configs.json");
     configs_file << configs;
     configs_file.close();
+}
+
+bool prj::out(fs::path KPM, fs::path PWD)
+{
+    load_configs(PWD);
+    return prj::integrate(KPM, PWD);
+}
+
+bool prj::integrate(fs::path KPM, fs::path PWD)
+{
+    try
+    {
+        std::cout << color::green << "* Integrating All Files\n"
+                  << color::white;
+        fs::create_directories(PWD / "out");
+        if (!fs::exists(PWD / "out" / "DISK"))
+        {
+            fs::copy_file(KPM / "DISK", PWD / "out" / "DISK");
+        }
+
+        std::cout << color::blue << "Changes:\n"
+                  << color::white;
+        if (!fh::flatten(PWD, PWD / "out", configs["lastOut"]))
+            return false;
+
+        configs["lastOut"] = time(NULL);
+        update_configs(PWD);
+        return true;
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << '\n';
+        return false;
+    }
 }

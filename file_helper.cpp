@@ -1,31 +1,72 @@
 #include "file_helper.h"
 #include <filesystem>
+#include <iostream>
+#include "console_color.h"
 
-void fs::copy_directory(const std::filesystem::path &source, const std::filesystem::path &destination)
+namespace fs = std::filesystem;
+
+void fh::copy_directory(fs::path source, fs::path dest)
 {
-    std::filesystem::create_directories(destination);
+    fs::create_directories(dest);
 
-    for (const auto &entry : std::filesystem::directory_iterator(source))
+    for (const auto &entry : fs::directory_iterator(source))
     {
         const auto &path = entry.path();
-        auto dest_path = destination / path.filename();
+        auto dest_path = dest / path.filename();
 
-        if (std::filesystem::is_directory(path))
+        if (fs::is_directory(path))
         {
-            copy_directory(path, dest_path);
+            fh::copy_directory(path, dest_path);
         }
-        else if (std::filesystem::is_regular_file(path))
+        else if (fs::is_regular_file(path))
         {
-            if (std::filesystem::exists(dest_path))
+            if (fs::exists(dest_path))
             {
-                std::filesystem::remove(dest_path);
+                fs::remove(dest_path);
             }
-            std::filesystem::copy_file(path, dest_path, std::filesystem::copy_options::update_existing);
+            fs::copy_file(path, dest_path, fs::copy_options::update_existing);
         }
     }
 }
 
-bool fs::exists(std::filesystem::path path)
+bool fh::flatten(fs::path source, fs::path dest, time_t since)
 {
-    return std::filesystem::exists(path);
+    try
+    {
+        for (auto &entry : fs::directory_iterator(source))
+        {
+            fs::path path = entry.path();
+
+            if (fs::is_directory(path))
+            {
+                if (path.filename() != "out")
+                    fh::flatten(path, dest, since);
+            }
+            else if (fs::is_regular_file(path))
+            {
+                if (path.filename() == "configs.json")
+                    continue;
+
+                if (fh::has_changed(path, since))
+                {
+                    fs::remove(dest / path.filename());
+                    std::cout << "\t" << path.filename() << "\n";
+                    fs::copy_file(path, dest / path.filename());
+                }
+            }
+        }
+        return true;
+    }
+    catch (const std::exception &e)
+    {
+        std::cout << color::red << "Error: " << color::white << e.what() << "\n";
+        return false;
+    }
+}
+
+bool fh::has_changed(fs::path path, time_t since)
+{
+    auto temp = std::chrono::time_point_cast<std::chrono::system_clock::duration>(std::filesystem::last_write_time(path) - std::filesystem::file_time_type::clock::now() + std::chrono::system_clock::now());
+    std::time_t last_modified = std::chrono::system_clock::to_time_t(temp);
+    return (std::difftime(last_modified, since) > 0);
 }

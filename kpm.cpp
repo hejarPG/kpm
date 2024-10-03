@@ -45,22 +45,19 @@ int main(int argc, char *argv[])
     {
         if (prj::init(KPM, PWD / (argc >= 3 ? argv[2] : "")))
         {
-            std::cout << color::green << "-- Project started! --\n"
+            std::cout << color::green << "* Project started!\n"
                       << color::white;
         }
         else
         {
-            std::cout << color::red << "-- Failed --\n"
+            std::cout << color::red << "* Failed \n"
                       << color::white;
         }
     }
-    // else if (command == "out")
-    // {
-    //     if (load_configs())
-    //     {
-    //         out();
-    //     }
-    // }
+    else if (command == "out")
+    {
+        prj::out(KPM, PWD);
+    }
     return 0;
 }
 

@@ -1,9 +1,10 @@
 #include <filesystem>
 
-namespace fs
-{
-    using path = std::filesystem::path;
+namespace fs = std::filesystem;
 
-    void copy_directory(const fs::path &source, const fs::path &destination);
-    bool exists(fs::path path);
+namespace fh
+{
+    void copy_directory(fs::path source, fs::path destination);
+    bool flatten(fs::path source, fs::path dest, time_t since);
+    bool has_changed(fs::path path, time_t since);
 }
