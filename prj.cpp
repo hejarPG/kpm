@@ -32,7 +32,7 @@ bool prj::init(fs::path KPM, fs::path PWD)
 
         configs = {
             {"name", PWD.filename()},
-            {"lastOut", time(NULL) - 1},
+            {"lastOut", 0},
             {"extenals", {}}};
 
         update_configs(PWD);
@@ -84,7 +84,16 @@ bool prj::out(fs::path KPM, fs::path PWD)
     configs["lastOut"] = time(NULL);
     update_configs(PWD);
 
+    run(PWD);
+
     return true;
+}
+
+void prj::run(fs::path PWD)
+{
+    load_configs(PWD);
+    std::string command = "cd out & blitz -g " + std::string(configs["name"]);
+    system(command.c_str());
 }
 
 bool prj::integrate(fs::path KPM, fs::path PWD)

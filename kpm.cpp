@@ -58,6 +58,10 @@ int main(int argc, char *argv[])
     {
         prj::out(KPM, PWD);
     }
+    else if (command == "run")
+    {
+        prj::run(PWD);
+    }
     return 0;
 }
 
