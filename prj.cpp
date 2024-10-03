@@ -2,6 +2,7 @@
 #include "file_helper.h"
 #include "console_color.h"
 #include "compiler.h"
+#include "assembler.h"
 #include "includes.h"
 
 json configs = {};
@@ -71,6 +72,9 @@ bool prj::out(fs::path KPM, fs::path PWD)
         return false;
 
     if (!compiler::compile(PWD / "out"))
+        return false;
+
+    if (!assembler::assemble(PWD / "out"))
         return false;
 
     configs["lastOut"] = time(NULL);
