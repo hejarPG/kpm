@@ -98,10 +98,8 @@ bool prj::integrate(fs::path KPM, fs::path PWD)
         std::string pattern_str = "";
         for (std::string pattern : ignores_json)
         {
-            std::cout << "DFGSDFG " << pattern << "\n";
             pattern_str += "|" + pattern;
         }
-        std::cout << "Regex: " << pattern_str << "\n";
 
         std::regex ignores(pattern_str);
 

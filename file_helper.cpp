@@ -32,7 +32,6 @@ bool fh::flatten(fs::path PWD, fs::path source, fs::path dest, std::regex ignore
         {
             fs::path path = entry.path();
             fs::path relative = fs::relative(path, PWD);
-            std::cout << relative << "\t" << std::regex_match(relative.string(), ignores) << "\n";
             if (std::regex_match(relative.string(), ignores))
             {
                 continue;

@@ -48,7 +48,7 @@ fs::path get_kpm_path()
     std::wstring ws(path);
     std::string kpm_path(ws.begin(), ws.end());
 
-    std::string redundant = "\\outDebug.exe";
+    std::string redundant = "\\kpm.exe";
     kpm_path = kpm_path.substr(0, kpm_path.length() - redundant.length());
 
     return kpm_path;
