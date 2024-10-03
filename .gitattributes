@@ -2,3 +2,4 @@
 DISK -export-ignore
 kpm.exe -export-ignore
 init -export-ignore
+init/* -export-ignore
