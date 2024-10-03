@@ -1,9 +1,8 @@
 #include "file_helper.h"
-#include <filesystem>
-#include <iostream>
 #include "console_color.h"
 
-namespace fs = std::filesystem;
+#include "includes.h"
+#include "prj.h"
 
 void fh::copy_directory(fs::path source, fs::path dest)
 {
@@ -29,7 +28,7 @@ void fh::copy_directory(fs::path source, fs::path dest)
     }
 }
 
-bool fh::flatten(fs::path source, fs::path dest, time_t since)
+bool fh::flatten(fs::path source, fs::path dest)
 {
     try
     {
@@ -40,17 +39,17 @@ bool fh::flatten(fs::path source, fs::path dest, time_t since)
             if (fs::is_directory(path))
             {
                 if (path.filename() != "out")
-                    fh::flatten(path, dest, since);
+                    return fh::flatten(path, dest);
             }
             else if (fs::is_regular_file(path))
             {
                 if (path.filename() == "configs.json")
                     continue;
 
-                if (fh::has_changed(path, since))
+                if (fh::has_changed(path))
                 {
                     fs::remove(dest / path.filename());
-                    std::cout << "\t" << path.filename() << "\n";
+                    std::cout << path.filename() << "\n";
                     fs::copy_file(path, dest / path.filename());
                 }
             }
@@ -64,9 +63,9 @@ bool fh::flatten(fs::path source, fs::path dest, time_t since)
     }
 }
 
-bool fh::has_changed(fs::path path, time_t since)
+bool fh::has_changed(fs::path path)
 {
     auto temp = std::chrono::time_point_cast<std::chrono::system_clock::duration>(std::filesystem::last_write_time(path) - std::filesystem::file_time_type::clock::now() + std::chrono::system_clock::now());
     std::time_t last_modified = std::chrono::system_clock::to_time_t(temp);
-    return (std::difftime(last_modified, since) > 0);
+    return (std::difftime(last_modified, prj::get_configs()["lastOut"]) > 0);
 }

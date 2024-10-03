@@ -1,13 +1,8 @@
 #include "prj.h"
 #include "file_helper.h"
 #include "console_color.h"
-#include <string>
-#include <iostream>
-#include <nlohmann/json.hpp>
-#include <fstream>
-
-using json = nlohmann::json;
-namespace fs = std::filesystem;
+#include "compiler.h"
+#include "includes.h"
 
 json configs = {};
 
@@ -67,8 +62,21 @@ void prj::update_configs(fs::path PWD)
 
 bool prj::out(fs::path KPM, fs::path PWD)
 {
+    if (!fs::exists(PWD / "configs.json"))
+        std::cout << color::red << "Error: " << color::white << "configs.json not found. initialize the project\n";
+
     load_configs(PWD);
-    return prj::integrate(KPM, PWD);
+
+    if (!integrate(KPM, PWD))
+        return false;
+
+    if (!compiler::compile(PWD / "out"))
+        return false;
+
+    configs["lastOut"] = time(NULL);
+    update_configs(PWD);
+
+    return true;
 }
 
 bool prj::integrate(fs::path KPM, fs::path PWD)
@@ -85,11 +93,10 @@ bool prj::integrate(fs::path KPM, fs::path PWD)
 
         std::cout << color::blue << "Changes:\n"
                   << color::white;
-        if (!fh::flatten(PWD, PWD / "out", configs["lastOut"]))
+
+        if (!fh::flatten(PWD, PWD / "out"))
             return false;
 
-        configs["lastOut"] = time(NULL);
-        update_configs(PWD);
         return true;
     }
     catch (const std::exception &e)
@@ -97,4 +104,9 @@ bool prj::integrate(fs::path KPM, fs::path PWD)
         std::cerr << e.what() << '\n';
         return false;
     }
+}
+
+json prj::get_configs()
+{
+    return configs;
 }
