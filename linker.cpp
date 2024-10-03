@@ -9,7 +9,7 @@ bool linker::link(fs::path dir)
 {
     try
     {
-        std::cout << color::green << "* Linking .s files\n"
+        std::cout << color::green << "* Linking .o files\n"
                   << color::white;
         std::string objs = "";
         for (const auto &entry : fs::directory_iterator(dir))
