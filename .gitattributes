@@ -2,3 +2,4 @@
 .gitattributes export-ignore
 *.cpp export-ignore
 *.h export-ignore
+init export-ignore
