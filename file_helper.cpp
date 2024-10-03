@@ -24,24 +24,27 @@ void fh::copy_directory(fs::path source, fs::path dest)
     }
 }
 
-bool fh::flatten(fs::path source, fs::path dest)
+bool fh::flatten(fs::path PWD, fs::path source, fs::path dest, std::regex ignores)
 {
     try
     {
         for (auto &entry : fs::directory_iterator(source))
         {
             fs::path path = entry.path();
+            fs::path relative = fs::relative(path, PWD);
+            std::cout << relative << "\t" << std::regex_match(relative.string(), ignores) << "\n";
+            if (std::regex_match(relative.string(), ignores))
+            {
+                continue;
+            }
 
             if (fs::is_directory(path))
             {
-                if (path.filename() != "out")
-                    return fh::flatten(path, dest);
+                if (!fh::flatten(PWD, path, dest, ignores))
+                    return false;
             }
             else if (fs::is_regular_file(path))
             {
-                if (path.filename() == "configs.json")
-                    continue;
-
                 if (fh::has_changed(path))
                 {
                     fs::remove(dest / path.filename());

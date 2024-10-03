@@ -27,7 +27,7 @@ bool prj::init(fs::path KPM, fs::path PWD)
         configs = {
             {"name", PWD.filename()},
             {"lastOut", 0},
-            {"extenals", {}}};
+            {"ignore", {".vscode", "out", "configs.json"}}};
 
         update_configs(PWD);
 
@@ -94,6 +94,17 @@ bool prj::integrate(fs::path KPM, fs::path PWD)
 {
     try
     {
+        json ignores_json = configs["ignore"];
+        std::string pattern_str = "";
+        for (std::string pattern : ignores_json)
+        {
+            std::cout << "DFGSDFG " << pattern << "\n";
+            pattern_str += "|" + pattern;
+        }
+        std::cout << "Regex: " << pattern_str << "\n";
+
+        std::regex ignores(pattern_str);
+
         std::cout << color::green << "* Integrating All Files\n"
                   << color::white;
         fs::create_directories(PWD / "out");
@@ -105,7 +116,7 @@ bool prj::integrate(fs::path KPM, fs::path PWD)
         std::cout << color::blue << "Changes:\n"
                   << color::white;
 
-        if (!fh::flatten(PWD, PWD / "out"))
+        if (!fh::flatten(PWD, PWD, PWD / "out", ignores))
             return false;
 
         return true;
