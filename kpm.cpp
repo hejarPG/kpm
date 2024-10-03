@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
     std::string command = argv[1];
     if (command == "init")
     {
-        if (prj::init(KPM, PWD / (argc >= 3 ? argv[2] : "")))
+        if (prj::init(KPM, argc >= 3 ? PWD / argv[2] : PWD))
         {
             std::cout << color::green << "* Project started!\n"
                       << color::white;

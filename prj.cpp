@@ -1,9 +1,10 @@
+#include "includes.h"
 #include "prj.h"
 #include "file_helper.h"
 #include "console_color.h"
 #include "compiler.h"
 #include "assembler.h"
-#include "includes.h"
+#include "linker.h"
 
 json configs = {};
 
@@ -75,6 +76,9 @@ bool prj::out(fs::path KPM, fs::path PWD)
         return false;
 
     if (!assembler::assemble(PWD / "out"))
+        return false;
+
+    if (!linker::link(PWD / "out"))
         return false;
 
     configs["lastOut"] = time(NULL);
