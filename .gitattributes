@@ -1,3 +1,4 @@
 .gitignore export-ignore
 .gitattributes export-ignore
-kpm.cpp export-ignore
+*.cpp export-ignore
+*.h export-ignore
